@@ -6,7 +6,7 @@ public class ComputerInteract : MonoBehaviour
     public GameObject screenUI;
     public float interactDistance = 3f;
 
-    private Camera playerCamera;
+    [SerializeField] private Camera playerCamera;
     private bool isUsing = false;
     public MouseLook mouseLook;
 
