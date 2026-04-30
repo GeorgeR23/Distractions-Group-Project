@@ -6,31 +6,42 @@ public class ComputerInteract : MonoBehaviour
     public GameObject screenUI;
     public float interactDistance = 3f;
 
-    [SerializeField] private Camera playerCamera;
+    [SerializeField] private Camera PlayerCamera;
     private bool isUsing = false;
-    public MouseLook mouseLook;
 
     void Start()
     {
-        playerCamera = Camera.main;
-        mouseLook = Camera.main.GetComponent<MouseLook>();
+        screenUI.SetActive(true);
+        Debug.Log("ComputerInteract initialized. Camera assigned: " + PlayerCamera);
     }
 
     void Update()
     {
+        if (Camera.main != PlayerCamera)
+        return;
+        
         if (!isUsing)
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+                Debug.Log("Left click detected");
+
+                Ray ray = new Ray(PlayerCamera.transform.position, PlayerCamera.transform.forward);
                 RaycastHit hit;
+
+                Debug.DrawRay(ray.origin, ray.direction * interactDistance, Color.red, 1f);
 
                 if (Physics.Raycast(ray, out hit, interactDistance))
                 {
-                    if (hit.transform == transform)
-                    {
-                        OpenComputer();
-                    }
+                    Debug.Log("Raycast hit: " + hit.transform.name);
+                    Debug.Log("Hit: " + hit.transform.name);
+                    Debug.Log("This object: " + transform.name);
+
+                    if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                        {
+                            Debug.Log("Hit this computer. Opening...");
+                            OpenComputer();
+                        }
                 }
             }
         }
@@ -38,6 +49,7 @@ public class ComputerInteract : MonoBehaviour
         {
             if (Mouse.current.rightButton.wasPressedThisFrame)
             {
+                Debug.Log("Right click detected. Closing computer...");
                 CloseComputer();
             }
         }
@@ -45,9 +57,15 @@ public class ComputerInteract : MonoBehaviour
 
     void OpenComputer()
     {
-        screenUI.SetActive(true);
-        mouseLook.enabled = false;
+        Debug.Log("Opening computer UI");
 
+        if (screenUI == null)
+        {
+            Debug.LogError("screenUI is NOT assigned!");
+            return;
+        }
+
+        screenUI.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         isUsing = true;
@@ -55,9 +73,15 @@ public class ComputerInteract : MonoBehaviour
 
     void CloseComputer()
     {
-        screenUI.SetActive(false);
-        mouseLook.enabled = true;
+        Debug.Log("Closing computer UI");
 
+        if (screenUI == null)
+        {
+            Debug.LogError("screenUI is NOT assigned!");
+            return;
+        }
+
+        screenUI.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         isUsing = false;
