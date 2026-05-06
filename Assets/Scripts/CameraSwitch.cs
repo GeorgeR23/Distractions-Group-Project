@@ -15,7 +15,7 @@ public class CameraSwitch : MonoBehaviour
             Debug.LogError("One or both cameras are not assigned!");
             return;
         }
-
+        // Ensure playercamera starts active and pccamera starts inactive
         cam1.SetActive(true);
         cam2.SetActive(false);
 
@@ -24,6 +24,13 @@ public class CameraSwitch : MonoBehaviour
     }
 
     void Update()
+    {
+        switchCamera();
+    }
+    
+    //This method checks for the F key press and toggles the active state of the two cameras.
+    //It also includes debug logs to verify the state of the cameras before and after the switch.
+    void switchCamera()
     {
         if (Keyboard.current.fKey.wasPressedThisFrame)
         {
@@ -41,6 +48,5 @@ public class CameraSwitch : MonoBehaviour
             Debug.Log("After switch:");
             Debug.Log("Cam1 active: " + cam1.activeSelf);
             Debug.Log("Cam2 active: " + cam2.activeSelf);
-        }
-    }
+        }}
 }

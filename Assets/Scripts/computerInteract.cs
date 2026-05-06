@@ -3,23 +3,38 @@ using UnityEngine.InputSystem;
 
 public class ComputerInteract : MonoBehaviour
 {
-    public GameObject screenUI;
-    public float interactDistance = 3f;
+    [Header("UI Panels")]
+    [SerializeField] private GameObject[] panels;
 
+    [Header("Settings")]
     [SerializeField] private Camera PlayerCamera;
+    [SerializeField] private float interactDistance = 3f;
+
     private bool isUsing = false;
+    private int currentPanel = 0;
 
     void Start()
     {
-        screenUI.SetActive(true);
+        // Turn all panels off at start
+        foreach (GameObject panel in panels)
+        {
+            if (panel != null)
+                panel.SetActive(false);
+        }
+
         Debug.Log("ComputerInteract initialized. Camera assigned: " + PlayerCamera);
     }
 
     void Update()
     {
+        IsPlayerLookingAtMonitor();
+    }
+
+    private void IsPlayerLookingAtMonitor()
+    {
         if (Camera.main != PlayerCamera)
-        return;
-        
+            return;
+
         if (!isUsing)
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -33,15 +48,11 @@ public class ComputerInteract : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit, interactDistance))
                 {
-                    Debug.Log("Raycast hit: " + hit.transform.name);
-                    Debug.Log("Hit: " + hit.transform.name);
-                    Debug.Log("This object: " + transform.name);
-
                     if (hit.transform == transform || hit.transform.IsChildOf(transform))
-                        {
-                            Debug.Log("Hit this computer. Opening...");
-                            OpenComputer();
-                        }
+                    {
+                        Debug.Log("Hit this computer. Opening...");
+                        OpenComputer();
+                    }
                 }
             }
         }
@@ -59,13 +70,14 @@ public class ComputerInteract : MonoBehaviour
     {
         Debug.Log("Opening computer UI");
 
-        if (screenUI == null)
+        if (panels.Length == 0)
         {
-            Debug.LogError("screenUI is NOT assigned!");
+            Debug.LogError("No panels assigned!");
             return;
         }
 
-        screenUI.SetActive(true);
+        ShowPanel(0); // open first panel by default
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         isUsing = true;
@@ -75,15 +87,37 @@ public class ComputerInteract : MonoBehaviour
     {
         Debug.Log("Closing computer UI");
 
-        if (screenUI == null)
+        foreach (GameObject panel in panels)
         {
-            Debug.LogError("screenUI is NOT assigned!");
-            return;
+            if (panel != null)
+                panel.SetActive(false);
         }
 
-        screenUI.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         isUsing = false;
+    }
+
+    // Call this from buttons
+    public void ShowPanel(int panelIndex)
+    {
+        if (panelIndex < 0 || panelIndex >= panels.Length)
+        {
+            Debug.LogWarning("Invalid panel index");
+            return;
+        }
+
+        // turn all off
+        foreach (GameObject panel in panels)
+        {
+            if (panel != null)
+                panel.SetActive(false);
+        }
+
+        // turn selected on
+        panels[panelIndex].SetActive(true);
+        currentPanel = panelIndex;
+
+        Debug.Log("Switched to panel " + panelIndex);
     }
 }
