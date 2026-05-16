@@ -101,6 +101,7 @@ public class ComputerInteract : MonoBehaviour
     // Call this from buttons
     public void ShowPanel(int panelIndex)
     {
+        Debug.Log("BUTTON WORKED");
         if (panelIndex < 0 || panelIndex >= panels.Length)
         {
             Debug.LogWarning("Invalid panel index");
